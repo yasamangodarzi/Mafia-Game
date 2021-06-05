@@ -24,12 +24,16 @@ public class Client {
                                 "The mafia must work well together and have the right strategy for the people who want to kill at night.\n" +
                                 " The main task of the citizens in this game is to realize the role of the Mafia in spite of all the lies they tell.\n");
 
-
-
-                } catch (UnknownHostException ex) {
+                        Thread threadread=new Thread(new Read(this,socket));
+                        threadread.start();
+                        Thread threadwrite=new Thread(new Write(this,socket));
+                        threadwrite.start();
+                } catch (UnknownHostException  unknownHostException) {
                         System.out.println("Server not found ");
-                } catch (IOException ex) {
+                        unknownHostException.printStackTrace();
+                } catch (IOException ioException) {
                         System.out.println("IOException Error");
+                        ioException.printStackTrace();
                 }
 
         }
@@ -47,7 +51,7 @@ public class Client {
                 Integer port = null;
                 do {
 
-                        System.out.println("\n\nPlease enter port game: ");
+                        System.out.println("Please enter port game: ");
 
                         String s = scanner.nextLine();
 
@@ -55,7 +59,7 @@ public class Client {
 
                                 port = Integer.parseInt(s);
 
-                        } catch (NumberFormatException e) {
+                        } catch (NumberFormatException numberFormatException) {
 
                                 System.out.println("ERROR: " + s + " is not a number.");
                         }

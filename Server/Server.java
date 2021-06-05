@@ -19,8 +19,9 @@ public class Server {
 
             }
 
-        } catch (IOException ex) {
+        } catch (IOException ioException) {
             System.out.println("Error in the server");
+            ioException.printStackTrace();
         }
     }
 
