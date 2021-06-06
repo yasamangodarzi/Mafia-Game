@@ -2,9 +2,10 @@ package Server;
 
 public class GodFather extends mafia{
 
-    public GodFather(String action) {
+    public GodFather() {
         action="GodFather";
         setaction(action);
+        setInquiry(false);
     }
 
 

@@ -3,11 +3,14 @@ package Server;
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.util.HashSet;
 import java.util.Scanner;
+import java.util.Set;
 
 public class Server {
     private static  int port=5000;
-
+    private static  Set<PlayerThread> playerThreads = new HashSet<>();
+    private  static  GameManagement gameManagement=new GameManagement();
     public Server(int port) {
         this.port = port;
     }
@@ -16,7 +19,10 @@ public class Server {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
                 Socket socket = serverSocket.accept();
-
+                PlayerThread NewPlayer = new PlayerThread(this,socket);
+                playerThreads.add(NewPlayer);
+                Thread thread=new Thread(NewPlayer);
+                thread.start();
             }
 
         } catch (IOException ioException) {
@@ -30,6 +36,11 @@ public class Server {
         System.out.println("If you want a new game, enter the port :" + port);
         Scanner scanner=new Scanner(System.in);
         Integer porrt= Integer.valueOf(scanner.nextLine());
+        System.out.println("How many players do you want to play with?");
+        Integer number=0;
+         do {
+             number= Integer.valueOf(scanner.nextLine());
+         }while (gameManagement.creatPlayer(number));
          Server server = new  Server(porrt);
         server.execute();
         

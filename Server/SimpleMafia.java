@@ -1,9 +1,11 @@
 package Server;
 
 public class SimpleMafia extends mafia{
-    public SimpleMafia (String action) {
+    public SimpleMafia () {
         action="SimpleMafia";
         setaction(action);
+        setInquiry(true);
+
     }
 
 }
