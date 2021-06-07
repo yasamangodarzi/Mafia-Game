@@ -43,4 +43,19 @@ public class GameManagement {
 
         }
     }
+    public Player getplayer() {
+
+        Random rand = new Random();
+        int tmp = rand.nextInt(playerSet.size());
+        return playerSet.get(tmp);
+    }
+    public boolean checkname(String n)
+    {
+        boolean  exist=false;
+        for (Player p:playerSet) {
+            if (p.getNamePlayer().equals(n)){ exist=true;}
+        }
+        return  exist;
+    }
+
 }

@@ -11,6 +11,26 @@ public class Player {
         this.card = card;
     }
 
+    public void setNamePlayer(String namePlayer) {
+        NamePlayer = namePlayer;
+    }
+
+    public void setSocket(Socket socket) {
+        this.socket = socket;
+    }
+
+    public String getNamePlayer() {
+        return NamePlayer;
+    }
+
+    public Socket getSocket() {
+        return socket;
+    }
+
+    public  Card getCard() {
+        return card;
+    }
+
     @Override
     public String toString() {
         return "Player{" +

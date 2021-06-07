@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Scanner;
 import java.util.Set;
 
@@ -23,6 +24,7 @@ public class Server {
                 playerThreads.add(NewPlayer);
                 Thread thread=new Thread(NewPlayer);
                 thread.start();
+
             }
 
         } catch (IOException ioException) {
@@ -43,10 +45,32 @@ public class Server {
          }while (gameManagement.creatPlayer(number));
          Server server = new  Server(porrt);
         server.execute();
-        
-        
-        
+
+
+        gameManagement.s();
 
     }
+   public void addPlayer(String PlayerName,Socket socket) {
+        boolean cor=true;
+        do {
+            Player player = gameManagement.getplayer();
+            if (player.getNamePlayer().equals(null)) {
+                player.setNamePlayer(PlayerName);
+                player.setSocket(socket);
+                cor=false;
+            }
+
+        }while (cor) ;
+
+    }
+     public boolean check(String name)
+     {
+        return  gameManagement.checkname(name);
+     }
+    public void f()
+    {
+        gameManagement.s();
+    }
+
 
 }
