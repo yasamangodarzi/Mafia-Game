@@ -7,9 +7,41 @@ public class Player {
     private String NamePlayer;
     private Socket socket;
     private Card card;
+    private boolean talking;
+    private boolean listen;
+    private boolean alive;
+
 
     public Player(Card card) {
         this.card = card;
+        talking=true;
+        listen=true;
+        alive=true;
+
+    }
+
+    public boolean isTalking() {
+        return talking;
+    }
+
+    public boolean isListen() {
+        return listen;
+    }
+
+    public boolean isAlive() {
+        return alive;
+    }
+
+    public void setTalking(boolean talking) {
+        this.talking = talking;
+    }
+
+    public void setListen(boolean listen) {
+        this.listen = listen;
+    }
+
+    public void setAlive(boolean alive) {
+        this.alive = alive;
     }
 
     public void setNamePlayer(String namePlayer) {

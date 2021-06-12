@@ -28,7 +28,9 @@ public class Port {
         if (choice==0){
             port++;
             System.out.println("name game:");
+
             Set(scanner.nextLine(),port);
+            System.out.println("port game :"+port);
             return port;
 
         }

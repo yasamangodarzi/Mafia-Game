@@ -12,8 +12,9 @@ public class Server {
     private ArrayList<Player> playerSet = new ArrayList<>();
     private static  Set<PlayerThread> playerThreads = new HashSet<>();
     private static ArrayList<String>name=new ArrayList<>();
+    private static ArrayList<Player>mafia=new ArrayList<>();
     private static HashMap<Player,PlayerThread> playergame=new HashMap<>();
-    public static Port porrt=new Port();
+     public static Port porrt=new Port();
 
     public Server(int port) {
         this.port = port;
@@ -67,8 +68,8 @@ public class Server {
 
     public  void setReadyplayer( ) {
          readyplayer++;
-         System.out.println(readyplayer);
-         System.out.println(number);
+         System.out.println("readyplayer:"+readyplayer);
+         System.out.println("number"+number);
     }
     public boolean start()
     {
@@ -179,27 +180,90 @@ public class Server {
     }
     void  sendMassage(String message) {
         for (PlayerThread aUser : playerThreads) {
+            if (aUser.getPlayer().isAlive() && aUser.getPlayer().isListen()) {
+                aUser.sendMessage(message);
+            }
+        }
+    }
 
-                    aUser.sendMessage(message);
+    public void ActionOnIntroductionNight()
+    {
+        StringBuilder MafiaName=new StringBuilder();
+        String DocterName=null;
+         MafiaName.append("\nGroup Mafia\n");
+        for (PlayerThread u:playerThreads) {
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Doctor")) {
+                u.sendMessage("You can save two people in two nights and only one person in the rest of the nights\n" +
+                        "Good luck");
+                DocterName = u.getPlayer().getNamePlayer();
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Citizen")) {
+                u.sendMessage("Good luck in choosing the Mafia");
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("detective")) {
+                u.sendMessage("Be careful when inquiring\nGood luck");
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Die_hard")) {
+                u.sendMessage("You will be safe from the Mafia overnight\n" +
+                        "You can also query people who have left the game twice\n" +
+                        "Good luck");
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
+
+                u.sendMessage("You can only save yourself once\n" +
+                        "  But you have no limits for the rest\n" +
+                        "Good luck");
+                MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
+                mafia.add(u.getPlayer());
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
+
+                u.sendMessage("The final shot with you and your inquiry is always negative for the detective");
+                MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
+                mafia.add(u.getPlayer());
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
+
+                u.sendMessage("good luck");
+                MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
+                mafia.add(u.getPlayer());
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Mayor")) {
+
+                u.sendMessage("You can cancel the voting once a day. Good luck\n" +
+                        "Also Dr. Shahr: " + DocterName);
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("professional")) {
+
+                u.sendMessage("You can shoot every night\n If you become a citizen, you will leave the game yourself" +
+                        "\n And if you hit the Mafia, the Mafia will be out of the game \nGood luck");
+            }
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Psychologist")) {
+
+                u.sendMessage("You can choose someone to treat\n" +
+                        "That way he can't talk during the day\n" +
+                        "You have this feature twice\n" +
+                        "Good luck");
+            }
+
+        }
+        for (PlayerThread u:playerThreads) {
+            if (u.getcardplayer() instanceof mafia)
+            {
+                u.sendMessage(MafiaName.toString());
             }
         }
 
-    public String sendNameMafia()
-    {
-        StringBuilder stringBuilder=new StringBuilder();
-        for (PlayerThread u:playerThreads) {
-
-                String name=u.ismafia();
-                if (name.equals(null))
-                {
-                    stringBuilder.append(u.getcardplayer().getAction()+":" +"welcome to mafia Game ");
-                }else {stringBuilder.append(u.getcardplayer().getAction()+":" +name);}
-
-
-        }
-        return stringBuilder.toString();
     }
 
+public boolean EndGameCondition()
+{
+    if (mafia.size()>=number-mafia.size())
+    {
+        return false;
+    }
+   else{return true;}
+}
 
 
 
