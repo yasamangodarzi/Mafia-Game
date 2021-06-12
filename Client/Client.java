@@ -1,6 +1,8 @@
 package Client;
 
 import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.net.Socket;
 import java.net.UnknownHostException;
 import java.util.Scanner;
@@ -26,8 +28,8 @@ public class Client {
 
 //                        Thread threadread=new Thread(new Read(this,socket));
 //                        threadread.start();
-                        Thread threadwrite=new Thread(new Write(this,socket));
-                        threadwrite.start();
+                         Thread threadwrite=new Thread(new Write(this,socket));
+                         threadwrite.start();
                 } catch (UnknownHostException  unknownHostException) {
                         System.out.println("Server not found ");
                         unknownHostException.printStackTrace();
