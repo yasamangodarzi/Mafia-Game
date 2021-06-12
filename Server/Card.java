@@ -6,4 +6,8 @@ public class Card {
 
     public void setaction(String s) {action=s;};
     public void setInquiry(boolean b) {Inquiry=b;};
+
+    public String getAction() {
+        return action;
+    }
 }

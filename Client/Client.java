@@ -24,8 +24,8 @@ public class Client {
                                 "The mafia must work well together and have the right strategy for the people who want to kill at night.\n" +
                                 " The main task of the citizens in this game is to realize the role of the Mafia in spite of all the lies they tell.\n");
 
-                        Thread threadread=new Thread(new Read(this,socket));
-                        threadread.start();
+//                        Thread threadread=new Thread(new Read(this,socket));
+//                        threadread.start();
                         Thread threadwrite=new Thread(new Write(this,socket));
                         threadwrite.start();
                 } catch (UnknownHostException  unknownHostException) {

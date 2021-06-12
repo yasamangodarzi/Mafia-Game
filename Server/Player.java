@@ -1,6 +1,7 @@
 package Server;
 
 import java.net.Socket;
+import java.util.Objects;
 
 public class Player {
     private String NamePlayer;
@@ -27,6 +28,10 @@ public class Player {
         return socket;
     }
 
+    public  String getactionCard() {
+        return card.getAction();
+    }
+
     public  Card getCard() {
         return card;
     }
@@ -38,5 +43,18 @@ public class Player {
                 ", socket=" + socket +
                 ", card=" + card +
                 '}';
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Player player = (Player) o;
+        return Objects.equals(NamePlayer, player.NamePlayer) && Objects.equals(socket, player.socket) && Objects.equals(card, player.card);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(NamePlayer, socket, card);
     }
 }
