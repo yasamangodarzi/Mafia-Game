@@ -14,8 +14,9 @@ public class Server {
     private static ArrayList<String>name=new ArrayList<>();
     private static ArrayList<Player>mafia=new ArrayList<>();
     private static HashMap<Player,PlayerThread> playergame=new HashMap<>();
-     public static Port porrt=new Port();
-
+    private static ArrayList<Player>daedPlayer=new ArrayList<>();
+    private static Port porrt=new Port();
+    private Voting voting;
     public Server(int port) {
         this.port = port;
     }
@@ -92,8 +93,8 @@ public class Server {
     }
     public boolean creatPlayer(int numberPlayer)
     {
-
-        if (numberPlayer<8){
+//
+        if (numberPlayer<2){
             System.out.println("You can not play with this number of players\n pleas try again");
             return true;
         }else
@@ -141,6 +142,21 @@ public class Server {
     {
         name.add(s);
     }
+    public void removeName(String namePlayer)
+    {
+        Iterator iterator= name.iterator();
+        String string=null;
+        while (iterator.hasNext())
+        {
+            string=(String) iterator.next();
+            if (string.equalsIgnoreCase(namePlayer))
+            {
+                name.remove(namePlayer);
+                break;
+            }
+
+        }
+    }
     public void addplayergame(Player player,PlayerThread playerThread)
     {
        playergame.put(player,playerThread);
@@ -180,8 +196,25 @@ public class Server {
     }
     void  sendMassage(String message) {
         for (PlayerThread aUser : playerThreads) {
-            if (aUser.getPlayer().isAlive() && aUser.getPlayer().isListen()) {
+             if (aUser.getPlayer().isAlive() || aUser.getPlayer().isListen()) {
                 aUser.sendMessage(message);
+             }
+        }
+    }
+    void PlayerOut(String string)
+    {
+        for (PlayerThread aUser : playerThreads) {
+            if (aUser.getPlayer().getNamePlayer().equalsIgnoreCase(string)) {
+                aUser.getPlayer().setAlive(false);
+                aUser.sendMessage("If you want to see the rest of the chats, enter 1, otherwise enter 0");
+                if (aUser.GetMessage().equalsIgnoreCase("0"))
+                {
+                    aUser.getPlayer().setListen(false);
+                }
+                Player player=aUser.getPlayer();
+                daedPlayer.add(player);
+                removeName(player.getNamePlayer());
+                removeplayer(player);
             }
         }
     }
@@ -230,7 +263,7 @@ public class Server {
             }
             if (u.getcardplayer().getAction().equalsIgnoreCase("Mayor")) {
 
-                u.sendMessage("You can cancel the voting once a day. Good luck\n" +
+                u.sendMessage("You can cancel the voting two  days. Good luck\n" +
                         "Also Dr. Shahr: " + DocterName);
             }
             if (u.getcardplayer().getAction().equalsIgnoreCase("professional")) {
@@ -264,7 +297,45 @@ public boolean EndGameCondition()
     }
    else{return true;}
 }
+public void addNameToVote()
+{
+    for (String n:name) {
+        voting.add(n);
+    }
+}
+public void VotePlayer(String s)
+{
+    voting.vote(s);
+}
+public String ResultVote()
+{
+    return voting.ResultVote();
+}
+public boolean AskMayour()
+{
+    boolean use=false;
+    for (PlayerThread u:playerThreads) {
+        if (u.getcardplayer().getAction().equalsIgnoreCase("Mayor"))
+        {
+           Mayor mayor=(Mayor) u.getcardplayer();
+           if (mayor.CanAbilityUsage())
+           {
+               u.sendMessage("Do you want to use your ability and cancel the voting? y/n");
+               if (u.GetMessage().equalsIgnoreCase("y"))
+               {
+                   mayor.setNumberOfAbilityUsage();
+                   use=true;
+               }
+           }else
+           {
+               u.sendMessage("You used your capabilities twice");
+                 use=false;
+           }
 
+        }
+    }
+    return use;
+}
 
 
 }
