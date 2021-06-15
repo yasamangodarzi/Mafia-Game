@@ -367,7 +367,7 @@ public void ActionOnNight()
 {
     StringBuilder stringBuilder=new StringBuilder();
     stringBuilder.append("Players who left the game\n");
-    ArrayList<PlayerThread>playerThreads=new ArrayList<PlayerThread>();
+    ArrayList<PlayerThread>playerOut=new ArrayList<PlayerThread>();
     for (PlayerThread u:playerThreads) {
         if (u.getcardplayer().getAction().equalsIgnoreCase("Doctor")) {
             doctor doctor=(doctor) u.getcardplayer();
@@ -454,10 +454,20 @@ public void ActionOnNight()
                     {
                        if (aUser.getcardplayer() instanceof mafia)
                        {
-
+                            PlayerOut(shootPlyer);
+                            stringBuilder.append(shootPlyer+"\n");
+                           playerOut.add(aUser);
                        }else
                        {
+                           for (PlayerThread a  : playerThreads) {
+                               if (a.getPlayer().getNamePlayer().equalsIgnoreCase("professional"))
+                               {
+                                   PlayerOut(a.getPlayer().getNamePlayer());
+                                   stringBuilder.append(a.getPlayer().getNamePlayer()+"\n");
+                                   playerOut.add(a);
+                               }
 
+                           }
                        }
                     }
                 }
