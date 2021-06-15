@@ -1,36 +1,54 @@
 package Server;
-
 import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.*;
 
+/**
+ * This class create the game server or Gad game and controls the overall game
+ */
 public class Server {
-    private static  int port=5000;
-     static Integer number=0;
+    // port server
+    private static  int port;
+    //number player
+    private static Integer number=0;
+    // number of readyPlayer
     private static int readyplayer=0;
+    // array list for all player in game
     private ArrayList<Player> playerSet = new ArrayList<>();
     private static  Set<PlayerThread> playerThreads = new HashSet<>();
+    // player name
     private static ArrayList<String>name=new ArrayList<>();
-    private static ArrayList<Player>mafia=new ArrayList<>();
+    // hold player role mafia
+    private static ArrayList<PlayerThread>mafia=new ArrayList<>();
     private static HashMap<Player,PlayerThread> playergame=new HashMap<>();
+    //hold Player outside game
     private static ArrayList<Player>daedPlayer=new ArrayList<>();
+    //craete class port
     private static Port porrt=new Port();
+    //If the die-hard inquiry request is true, otherwise it is false
     private static boolean InquiryDiehard=false;
+    //create class vote
     private Voting voting;
+    //constructor
     public Server(int port) {
         this.port = port;
     }
-
+    /**
+     * This method execute the server
+     */
     public void execute() {
         try (ServerSocket serverSocket = new ServerSocket(port)) {
             while (true) {
+                // Alarms the server in a dedicated earphone
                 Socket socket = serverSocket.accept();
+                //The client connects to the server
                 PlayerThread NewPlayer = new PlayerThread(this,socket);
                 playerThreads.add(NewPlayer);
+                //thread is created
                 Thread thread=new Thread(NewPlayer);
+                //thread is start
                 thread.start();
-
             }
 
         } catch (IOException ioException) {
@@ -38,7 +56,7 @@ public class Server {
             ioException.printStackTrace();
         }
     }
-
+    // main methode
     public static void main(String[] args) {
         Scanner scanner=new Scanner(System.in);
         Server server = new  Server(porrt.choiceGame());
@@ -49,30 +67,19 @@ public class Server {
         server.s();
         server.execute();
     }
-//   public void addPlayer(String PlayerName,Socket socket) {
-//        boolean cor=true;
-//        do {
-//            Player player = gameManagement.getplayer();
-//            if (player.getNamePlayer().equals(null)) {
-//                player.setNamePlayer(PlayerName);
-//                player.setSocket(socket);
-//                cor=false;
-//            }
-//
-//        }while (cor) ;
-//
-//    }
-
-
-    public static int getReadyplayer() {
-        return readyplayer;
-    }
-
+    /**
+     * This method adds a number to the number of ready players whenever each client declares readiness.
+     */
     public  void setReadyplayer( ) {
          readyplayer++;
          System.out.println("readyplayer:"+readyplayer);
          System.out.println("number"+number);
     }
+    /**
+     * This method checks if the number of players entered is equal to the number of players ready to play
+     * return true, otherwise it returns false.
+     * @return start game
+     */
     public boolean start()
     {
         if (readyplayer==number)
@@ -80,8 +87,9 @@ public class Server {
             return true;
         }else return false;
     }
-
-
+    /**
+     * this methode show card
+     */
     public void s()
     {
         System.out.println("Cards:");
@@ -92,14 +100,23 @@ public class Server {
         System.out.print("number player :");
         System.out.println(playerSet.size());
     }
+
+    /**
+     * This method takes the number of player players
+     *  If there are less than 8 players, the user will be re-entered
+     *  Otherwise it makes cards with proportions
+     * @param numberPlayer
+     * @return
+     */
     public boolean creatPlayer(int numberPlayer)
     {
-//
-        if (numberPlayer<2){
+       //
+        if (numberPlayer<8){
             System.out.println("You can not play with this number of players\n pleas try again");
             return true;
         }else
         {
+            // create player
             playerSet.add(new Player(new doctor()));
             playerSet.add(new Player(new Mayor()));
             playerSet.add(new Player(new Detective()));
@@ -124,12 +141,23 @@ public class Server {
         }
 
     }
+
+    /**
+     * This class randomly returns a player that contains a special card
+     * @return
+     */
     public Player getplayer() {
 
         Random rand = new Random();
         int tmp = rand.nextInt(playerSet.size());
         return playerSet.get(tmp);
     }
+
+    /**
+     * This method checks if the player name is duplicate and takes another name from the user
+     * @param n
+     * @return true if name okey
+     */
     public boolean CheckName(String n)
     {
         System.out.println(n);
@@ -139,10 +167,20 @@ public class Server {
         }
         return exist;
     }
+
+    /**
+     * This method adds the player name to the list of player names
+     * @param s
+     */
     public void addName(String s)
     {
         name.add(s);
     }
+
+    /**
+     * This method deletes the given player name by scrolling through the list
+     * @param namePlayer
+     */
     public void removeName(String namePlayer)
     {
         Iterator iterator= name.iterator();
@@ -158,10 +196,21 @@ public class Server {
 
         }
     }
+
+    /**
+     * this methode add player and map with playerThread
+     * @param player
+     * @param playerThread
+     */
     public void addplayergame(Player player,PlayerThread playerThread)
     {
        playergame.put(player,playerThread);
     }
+
+    /**
+     * This method removes a player from the list
+     * @param player
+     */
     public void removeplayer(Player player)
     {
         Iterator iterator= playerSet.iterator();
@@ -177,6 +226,11 @@ public class Server {
 
         }
     }
+
+    /**
+     *  This method removes a playerThread from the list
+     * @param playerThread
+     */
     public void RemovePlayerTheard(PlayerThread playerThread)
     {
         Iterator iterator= playerThreads.iterator();
@@ -192,24 +246,11 @@ public class Server {
 
         }
     }
-    void broadcast(String message, PlayerThread excludeUser) {
-        for (PlayerThread aUser : playerThreads) {
-            if (aUser != excludeUser) {
-                aUser.sendMessage(message);
-            }
-        }
-    }
-    void broadcastforMafia(String message, PlayerThread excludeUser) {
-        for (PlayerThread aUser : playerThreads) {
-            if (aUser != excludeUser) {
-                if (aUser.getcardplayer()instanceof mafia)
-                {
-                    aUser.sendMessage(message);
-                }
 
-            }
-        }
-    }
+    /**
+     * This method sends a message to all players
+     * @param message
+     */
     void  sendMassage(String message) {
         for (PlayerThread aUser : playerThreads) {
              if (aUser.getPlayer().isAlive() || aUser.getPlayer().isListen()) {
@@ -217,6 +258,15 @@ public class Server {
              }
         }
     }
+
+    /**
+     * This method removes a player from the game
+     *   To do this, it removes the player from the player list and player name and playerThread
+     *   and add to dead player
+     *   Asks players if they would like to continue chatting if
+     *   If the player answers yes, it shows the chat for him
+     * @param string
+     */
     void PlayerOut(String string)
     {
         for (PlayerThread aUser : playerThreads) {
@@ -236,6 +286,12 @@ public class Server {
         }
     }
 
+    /**
+     * This method manages the introduction night
+     * Depending on the role of each player, it sends the appropriate message to it
+     * If the player has the role of Mafia, he adds it to the list of Mafias
+     * It also sends the names of other Mafia players to the Mafias
+     */
     public void ActionOnIntroductionNight()
     {
         StringBuilder MafiaName=new StringBuilder();
@@ -264,19 +320,19 @@ public class Server {
                         "  But you have no limits for the rest\n" +
                         "Good luck");
                 MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
-                mafia.add(u.getPlayer());
+                mafia.add(u);
             }
             if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
 
                 u.sendMessage("The final shot with you and your inquiry is always negative for the detective");
                 MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
-                mafia.add(u.getPlayer());
+                mafia.add(u);
             }
             if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
 
                 u.sendMessage("good luck");
                 MafiaName.append(u.getPlayer().getNamePlayer() + ":" + u.getcardplayer().getAction() + "\n");
-                mafia.add(u.getPlayer());
+                mafia.add(u);
             }
             if (u.getcardplayer().getAction().equalsIgnoreCase("Mayor")) {
 
@@ -306,7 +362,13 @@ public class Server {
 
     }
 
-public boolean EndGameCondition()
+    /**
+     * This method checks the condition of the end of the game
+     * The condition for the end of the game is that the number of mafias
+     * is equal to or greater than the number of citizens in the game
+     * @return
+     */
+    public boolean EndGameCondition()
 {
     if (mafia.size()>=number-mafia.size())
     {
@@ -314,22 +376,41 @@ public boolean EndGameCondition()
     }
    else{return true;}
 }
-public void addNameToVote()
+
+    /**
+     *This method adds the names of in game players to vote
+     */
+    public void addNameToVote()
 {
     for (String n:name) {
         voting.add(n);
     }
 }
-public void VotePlayer(String s)
+
+    /**
+      This method adds a number to the vote by naming a player
+     * @param s
+     */
+    public void VotePlayer(String s)
 {
     voting.vote(s);
 }
-public String ResultVote()
-{
-    return voting.ResultVote();
-}
-public boolean AskMayour()
-{
+
+    /**
+     *   This method announces the voting result using the voting class
+     * @return
+     */
+    public String ResultVote()
+    {
+       return voting.ResultVote();
+    }
+
+    /**
+     * this method asks the game mayor if he wants to cancel the withdrawal
+     * @return
+     */
+    public boolean AskMayor()
+        {
     boolean use=false;
     for (PlayerThread u:playerThreads) {
         if (u.getcardplayer().getAction().equalsIgnoreCase("Mayor"))
@@ -353,7 +434,13 @@ public boolean AskMayour()
     }
     return use;
 }
-public boolean Inquiry(String string)
+
+    /**
+     * This method takes the name of a player and returns the result of the inquiry
+     * @param string
+     * @return
+     */
+    public boolean Inquiry(String string)
 {
     for (PlayerThread aUser : playerThreads) {
          if (aUser.getPlayer().getNamePlayer().equalsIgnoreCase(string))
@@ -363,12 +450,20 @@ public boolean Inquiry(String string)
     }
     return true;
 }
-public void ActionOnNight()
+
+    /**
+     * This method manages the properties that each role has at night
+     *   And by waking up to each role and asking him for things,
+     *   it performs the task of that role at night
+     */
+    public void ActionOnNight()
 {
     StringBuilder stringBuilder=new StringBuilder();
     stringBuilder.append("Players who left the game\n");
     ArrayList<PlayerThread>playerOut=new ArrayList<PlayerThread>();
     for (PlayerThread u:playerThreads) {
+        u.sendMessage("Night");
+        // doctor role
         if (u.getcardplayer().getAction().equalsIgnoreCase("Doctor")) {
             doctor doctor=(doctor) u.getcardplayer();
             doctor.setNight();
@@ -382,6 +477,7 @@ public void ActionOnNight()
                 for (PlayerThread aUser : playerThreads) {
                     if (aUser.getPlayer().getNamePlayer().equals(SavePlayer))
                     {
+
                         if (aUser.getcardplayer().getAction().equalsIgnoreCase("Doctor"))
                         {
                            if (doctor.getSaveMyself())
@@ -408,13 +504,15 @@ public void ActionOnNight()
                 }
 
             }
-
+            u.sendMessage("finish");
         }
+        // detective role
         if (u.getcardplayer().getAction().equalsIgnoreCase("detective")) {
             u.sendMessage("Inquire which player you want?");
             if (Inquiry(u.GetMessage())){u.sendMessage("Your inquiry is positive");}
             else {u.sendMessage("Your query is negative");}
         }
+         // die hard role
         if (u.getcardplayer().getAction().equalsIgnoreCase("Die_hard")) {
             Die_hard die_hard=(Die_hard) u.getcardplayer();
             if (die_hard.CanAbilityUsage())
@@ -424,25 +522,41 @@ public void ActionOnNight()
                 {
                     die_hard.setNumberOfAbilityUsage();
                     InquiryDiehard=true;
+                    u.sendMessage("Ok");
                 }
             }else
             {
                 u.sendMessage("You used your capabilities twice");
             }
         }
-
-
+        // dr-lecter role
         if (u.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
+            String YourMassage=null;
+            do {
+                  YourMassage = u.GetMessage();
+                sendMassageToMafia(YourMassage);
+
+            }while (!(YourMassage.equals("1")));
 
         }
+        // godFather
         if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
 
-
+            String YourMassage=null;
+            do {
+                YourMassage = u.GetMessage();
+                sendMassageToMafia(YourMassage);
+            }while (!(YourMassage.equals("1")));;
         }
+        // simpleMafia role
         if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
-
+            String YourMassage=null;
+            do {
+                YourMassage = u.GetMessage();
+                sendMassageToMafia(YourMassage);
+            }while (!(YourMassage.equals("1")));
         }
-
+        // professional role
         if (u.getcardplayer().getAction().equalsIgnoreCase("professional")) {
             u.sendMessage("Do you want to shoot? 1 (Yas) / 0 (No)");
             if (u.GetMessage().equalsIgnoreCase("1"))
@@ -471,9 +585,10 @@ public void ActionOnNight()
                        }
                     }
                 }
-            }
+            }else {u.sendMessage("ok");}
 
         }
+        // psychologist role
         if (u.getcardplayer().getAction().equalsIgnoreCase("Psychologist")) {
            Psychologist psychologist=(Psychologist) u.getcardplayer();
             if (psychologist.CanAbilityUsage())
@@ -497,10 +612,14 @@ public void ActionOnNight()
                 u.sendMessage("You used your capabilities twice");
             }
         }
-
     }
 }
-public void InquiringPlayerOut ()
+
+    /**
+     * This method shows users inquiry out-of-game characters
+     * if die hard want
+     */
+    public void InquiringPlayerOut ()
 {
     if (InquiryDiehard)
     {
@@ -519,6 +638,10 @@ public void InquiringPlayerOut ()
         InquiryDiehard=false;
     }
 }
-
-
+public void sendMassageToMafia(String s)
+{
+    for (PlayerThread p:mafia) {
+        p.sendMessage(s);
+    }
+}
 }

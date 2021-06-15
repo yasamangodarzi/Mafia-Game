@@ -8,7 +8,7 @@ public class Detective extends Card {
         // Set the role of a Detective
         action="Detective";
         setaction(action);
-          /*
+        /*
         Detective have a negative inquiry
         Set negative inquiry
          */
