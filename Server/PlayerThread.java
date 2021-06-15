@@ -2,6 +2,7 @@ package Server;
 
 import java.io.*;
 import java.net.Socket;
+import java.util.Objects;
 
 public class PlayerThread  implements Runnable{
     private Socket socket;
@@ -54,6 +55,7 @@ public class PlayerThread  implements Runnable{
                             while (server.EndGameCondition()) {
                                server.sendMassage("Day " + Day);
                                Day++;
+                               //i
                                long Time = System.currentTimeMillis();
                                long EndDay = Time + 300000;//5 min
                                String YourMassage =null;
@@ -128,4 +130,18 @@ public class PlayerThread  implements Runnable{
 //        return player.getNamePlayer();
 //       else{return  "";}
 //    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        PlayerThread that = (PlayerThread) o;
+        return Objects.equals(socket, that.socket) && Objects.equals(server, that.server) && Objects.equals(write, that.write)
+                && Objects.equals(read, that.read) && Objects.equals(player, that.player);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(socket, server, write, read, player);
+    }
 }

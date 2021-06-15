@@ -10,4 +10,8 @@ public class Card {
     public String getAction() {
         return action;
     }
+
+    public boolean getInquiry() {
+        return Inquiry;
+    }
 }

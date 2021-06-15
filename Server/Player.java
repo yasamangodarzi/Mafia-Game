@@ -10,14 +10,23 @@ public class Player {
     private boolean talking;
     private boolean listen;
     private boolean alive;
-
+    private boolean Save;
 
     public Player(Card card) {
         this.card = card;
         talking=true;
         listen=true;
         alive=true;
+        Save=false;
 
+    }
+
+    public boolean isSave() {
+        return Save;
+    }
+
+    public void setSave(boolean save) {
+        this.Save = save;
     }
 
     public boolean isTalking() {

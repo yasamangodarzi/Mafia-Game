@@ -16,6 +16,7 @@ public class Server {
     private static HashMap<Player,PlayerThread> playergame=new HashMap<>();
     private static ArrayList<Player>daedPlayer=new ArrayList<>();
     private static Port porrt=new Port();
+    private static boolean InquiryDiehard=false;
     private Voting voting;
     public Server(int port) {
         this.port = port;
@@ -176,6 +177,21 @@ public class Server {
 
         }
     }
+    public void RemovePlayerTheard(PlayerThread playerThread)
+    {
+        Iterator iterator= playerThreads.iterator();
+        PlayerThread playerThread1=null;
+        while (iterator.hasNext())
+        {
+            playerThread1 =(PlayerThread) iterator.next();
+            if (playerThread1.equals(playerThread))
+            {
+                playerThreads.remove(playerThread1);
+                break;
+            }
+
+        }
+    }
     void broadcast(String message, PlayerThread excludeUser) {
         for (PlayerThread aUser : playerThreads) {
             if (aUser != excludeUser) {
@@ -215,6 +231,7 @@ public class Server {
                 daedPlayer.add(player);
                 removeName(player.getNamePlayer());
                 removeplayer(player);
+                RemovePlayerTheard(aUser);
             }
         }
     }
@@ -320,8 +337,8 @@ public boolean AskMayour()
            Mayor mayor=(Mayor) u.getcardplayer();
            if (mayor.CanAbilityUsage())
            {
-               u.sendMessage("Do you want to use your ability and cancel the voting? y/n");
-               if (u.GetMessage().equalsIgnoreCase("y"))
+               u.sendMessage("Do you want to use your ability and cancel the voting? 1 (Yas) / 0 (No)");
+               if (u.GetMessage().equalsIgnoreCase("1"))
                {
                    mayor.setNumberOfAbilityUsage();
                    use=true;
@@ -335,6 +352,162 @@ public boolean AskMayour()
         }
     }
     return use;
+}
+public boolean Inquiry(String string)
+{
+    for (PlayerThread aUser : playerThreads) {
+         if (aUser.getPlayer().getNamePlayer().equalsIgnoreCase(string))
+         {
+              return aUser.getPlayer().getCard().getInquiry();
+         }
+    }
+    return true;
+}
+public void ActionOnNight()
+{
+    StringBuilder stringBuilder=new StringBuilder();
+    stringBuilder.append("Players who left the game\n");
+    ArrayList<PlayerThread>playerThreads=new ArrayList<PlayerThread>();
+    for (PlayerThread u:playerThreads) {
+        if (u.getcardplayer().getAction().equalsIgnoreCase("Doctor")) {
+            doctor doctor=(doctor) u.getcardplayer();
+            doctor.setNight();
+            u.sendMessage("What player do you want to save?");
+            for (int i=0;i<=doctor.check(); )
+            {
+                int j=1;
+                u.sendMessage("NamePlayer"+j+":");
+
+                String SavePlayer=u.GetMessage();
+                for (PlayerThread aUser : playerThreads) {
+                    if (aUser.getPlayer().getNamePlayer().equals(SavePlayer))
+                    {
+                        if (aUser.getcardplayer().getAction().equalsIgnoreCase("Doctor"))
+                        {
+                           if (doctor.getSaveMyself())
+                           {
+                               doctor.setSaveMyself();
+                               aUser.getPlayer().setSave(true);
+                               i++;
+                               j++;
+                           }
+                           else {aUser.sendMessage("You can not save yourself more than once!");}
+                        }else
+                        {
+                            if (!(aUser.getPlayer().getCard() instanceof mafia))
+                            {
+                                aUser.getPlayer().setSave(true);
+
+                            }
+                            i++;
+                            j++;
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+        if (u.getcardplayer().getAction().equalsIgnoreCase("detective")) {
+            u.sendMessage("Inquire which player you want?");
+            if (Inquiry(u.GetMessage())){u.sendMessage("Your inquiry is positive");}
+            else {u.sendMessage("Your query is negative");}
+        }
+        if (u.getcardplayer().getAction().equalsIgnoreCase("Die_hard")) {
+            Die_hard die_hard=(Die_hard) u.getcardplayer();
+            if (die_hard.CanAbilityUsage())
+            {
+                u.sendMessage("Do you want to inquire about people outside the game? 1 (Yas) / 0 (No)");
+                if (u.GetMessage().equals("1"))
+                {
+                    die_hard.setNumberOfAbilityUsage();
+                    InquiryDiehard=true;
+                }
+            }else
+            {
+                u.sendMessage("You used your capabilities twice");
+            }
+        }
+
+
+        if (u.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
+
+        }
+        if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
+
+
+        }
+        if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
+
+        }
+
+        if (u.getcardplayer().getAction().equalsIgnoreCase("professional")) {
+            u.sendMessage("Do you want to shoot? 1 (Yas) / 0 (No)");
+            if (u.GetMessage().equalsIgnoreCase("1"))
+            {
+                 u.sendMessage("Please enter the player name:");
+                 String shootPlyer=u.GetMessage();
+                for (PlayerThread aUser : playerThreads) {
+                    if (aUser.getPlayer().getNamePlayer().equalsIgnoreCase(shootPlyer))
+                    {
+                       if (aUser.getcardplayer() instanceof mafia)
+                       {
+
+                       }else
+                       {
+
+                       }
+                    }
+                }
+            }
+
+        }
+        if (u.getcardplayer().getAction().equalsIgnoreCase("Psychologist")) {
+           Psychologist psychologist=(Psychologist) u.getcardplayer();
+            if (psychologist.CanAbilityUsage())
+            {
+                u.sendMessage("Do you want to silence a player? 1 (Yas) / 0 (No)");
+                if (u.GetMessage().equalsIgnoreCase("1"))
+                {
+                    psychologist.setNumberOfAbilityUsage();
+                    u.sendMessage("Enter the name of the player you want to silence");
+                    String SilentPlayer=u.GetMessage();
+                    for (PlayerThread aUser : playerThreads) {
+                        if (aUser.getPlayer().getNamePlayer().equalsIgnoreCase(SilentPlayer))
+                        {
+                           aUser.getPlayer().setTalking(false);
+                        }
+                    }
+
+                }
+            }else
+            {
+                u.sendMessage("You used your capabilities twice");
+            }
+        }
+
+    }
+}
+public void InquiringPlayerOut ()
+{
+    if (InquiryDiehard)
+    {
+        StringBuilder stringBuilder=new StringBuilder();
+        stringBuilder.append("The role of out of game players\n");
+        for (Player p:daedPlayer) {
+            stringBuilder.append(p.getactionCard()+"\n");
+        }
+
+        for (PlayerThread aUser : playerThreads) {
+            if (aUser.getPlayer().isAlive() || aUser.getPlayer().isListen())
+            {
+                aUser.sendMessage(stringBuilder.toString());
+            }
+        }
+        InquiryDiehard=false;
+    }
 }
 
 
