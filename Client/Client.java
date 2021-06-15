@@ -193,15 +193,31 @@ public class Client {
                                              }
                                              if (action.equalsIgnoreCase("Dr_Lecter"))
                                              {
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
+                                                 System.out.println(read.readLine());
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
 
                                              }
                                              if (action.equalsIgnoreCase("GodFather"))
                                              {
+                                                  System.out.println(read.readLine());
+                                                  write.println(scanner.nextLine());
+                                                 System.out.println(read.readLine());
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
 
                                              }
                                              if (action.equalsIgnoreCase("SimpleMafia"))
                                              {
-
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
+                                                 System.out.println(read.readLine());
+                                                 System.out.println(read.readLine());
+                                                 write.println(scanner.nextLine());
                                              }
                                              Night=false;
                                         }

@@ -458,6 +458,7 @@ public class Server {
      */
     public void ActionOnNight()
 {
+    boolean mafiaShoot=false;
     StringBuilder stringBuilder=new StringBuilder();
     stringBuilder.append("Players who left the game\n");
     ArrayList<PlayerThread>playerOut=new ArrayList<PlayerThread>();
@@ -529,32 +530,87 @@ public class Server {
                 u.sendMessage("You used your capabilities twice");
             }
         }
-        // dr-lecter role
-        if (u.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
-            String YourMassage=null;
-            do {
-                  YourMassage = u.GetMessage();
-                sendMassageToMafia(YourMassage);
+        if (u.getcardplayer() instanceof mafia)
+        {
+            // dr-lecter role
+            if (u.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
 
-            }while (!(YourMassage.equals("1")));
+                Dr_Lecter dr_lecter = (Dr_Lecter) u.getcardplayer();
+                u.sendMessage("Which player do you want to shoot?");
+                String YourMassage = u.GetMessage();
+                sendMassageToMafia("Player comments" + u.getPlayer().getNamePlayer() + YourMassage);
+                if (!mafiaShoot) {
+                    u.sendMessage("Who are you shooting at?");
+                    String player = u.GetMessage();
+                    for (PlayerThread pl : playerThreads) {
+                        if (pl.getPlayer().getNamePlayer().equalsIgnoreCase(player)) {
+                            if (pl.getPlayer().isSave()) {
+                                break;
+                            } else {
+                                PlayerOut(player);
+                                playerOut.add(pl);
+                            }
+                        }
+                    }
+                    mafiaShoot = true;
+                }
+                u.sendMessage("Who do you want to save?");
+                String mafiaSave = u.GetMessage();
+                for (PlayerThread mafia : mafia) {
+                    if (mafia.getPlayer().getNamePlayer().equalsIgnoreCase(mafiaSave)) {
+                        if (mafia.getcardplayer().getAction().equalsIgnoreCase("Dr_Lecter")) {
+                            if (dr_lecter.getSaveMyself()) {
+                                dr_lecter.setSaveMyself();
+                                mafia.getPlayer().setSave(true);
+                            }else {mafia.sendMessage("You can not save yourself more than once!");}
+                        } else mafia.getPlayer().setSave(true);
+                    }
+                }
+            }
+            // godFather role
+            if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
 
-        }
-        // godFather
-        if (u.getcardplayer().getAction().equalsIgnoreCase("GodFather")) {
+                u.sendMessage("Which player do you want to shoot?");
+                String YourMassage = u.GetMessage();
+                sendMassageToMafia("Player comments"+u.getPlayer().getNamePlayer()+YourMassage);
+                if (u.getPlayer().isAlive())
+                {
+                    mafiaShoot=true;
+                    u.sendMessage("Who are you shooting at?");
+                   String player= u.GetMessage();
+                    for (PlayerThread pl:playerThreads) {
+                        if (pl.getPlayer().getNamePlayer().equalsIgnoreCase(player))
+                        {
+                            if (pl.getPlayer().isSave())
+                            {
+                                break;
+                            }else {PlayerOut(player);}
+                        }
+                    }
+                }
 
-            String YourMassage=null;
-            do {
-                YourMassage = u.GetMessage();
-                sendMassageToMafia(YourMassage);
-            }while (!(YourMassage.equals("1")));;
-        }
-        // simpleMafia role
-        if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
-            String YourMassage=null;
-            do {
-                YourMassage = u.GetMessage();
-                sendMassageToMafia(YourMassage);
-            }while (!(YourMassage.equals("1")));
+            }
+            // simpleMafia role
+            if (u.getcardplayer().getAction().equalsIgnoreCase("SimpleMafia")) {
+                u.sendMessage("Which player do you want to shoot?");
+                String YourMassage = u.GetMessage();
+                sendMassageToMafia("Player comments"+u.getPlayer().getNamePlayer()+YourMassage);
+                if (!mafiaShoot)
+                {
+                    u.sendMessage("Who are you shooting at?");
+                    String player= u.GetMessage();
+                    for (PlayerThread pl:playerThreads) {
+                        if (pl.getPlayer().getNamePlayer().equalsIgnoreCase(player))
+                        {
+                            if (pl.getPlayer().isSave())
+                            {
+                                break;
+                            }else {PlayerOut(player);}
+                        }
+                    }
+                    mafiaShoot=true;
+                }
+            }
         }
         // professional role
         if (u.getcardplayer().getAction().equalsIgnoreCase("professional")) {
@@ -568,9 +624,12 @@ public class Server {
                     {
                        if (aUser.getcardplayer() instanceof mafia)
                        {
-                            PlayerOut(shootPlyer);
-                            stringBuilder.append(shootPlyer+"\n");
-                           playerOut.add(aUser);
+                           if (aUser.getPlayer().isSave()){break;}
+                           else {   PlayerOut(shootPlyer);
+                               stringBuilder.append(shootPlyer+"\n");
+                               playerOut.add(aUser);
+                           }
+
                        }else
                        {
                            for (PlayerThread a  : playerThreads) {
